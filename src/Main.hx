@@ -26,15 +26,24 @@ class Main
 		
 		removedHaxelibVersions = "";
 		
-		var totalSize:Int = 0;
+		var totalSize:Float = 0;
 		
 		for (entry in FileSystem.readDirectory(path))
 		{
 			totalSize += cleanHaxelib(PathHelper.combine(path, entry));
 		}
+		
+		if (totalSize != 0) 
+		{
+			Lib.println("Removed libs total size: " + Std.string(totalSize) + " mb");
+		}
+		else 
+		{
+			Lib.println("Nothing to remove");
+		}
 	}
 	
-	private static function cleanHaxelib(path:String):Int
+	private static function cleanHaxelib(path:String):Float
 	{
 		var currentVersion:String = null;
 		var version:String = null;
@@ -43,9 +52,8 @@ class Main
 		if (FileSystem.exists(pathToCurrent)) 
 		{
 			currentVersion = File.getContent(pathToCurrent);
+			version = StringTools.replace(currentVersion, ".", ",");
 		}
-		
-		version = StringTools.replace(currentVersion, ".", ",");
 		
 		var dev:String = null;
 		var pathToDev = PathHelper.combine(path, ".dev");
@@ -56,7 +64,7 @@ class Main
 		
 		var pathToFolder:String;
 		
-		var totalSize:Int = 0;
+		var totalSize:Float = 0;
 		
 		var answer:PlatformSetup.Answer = null;
 		
@@ -76,7 +84,7 @@ class Main
 						trace("pathToFolder: ", pathToFolder);
 						trace("dev=pathToFolder: ", dev==pathToFolder);*/
 						
-						if (version != "dev" || (dev != null && dev != pathToFolder)) 
+						if (dev != pathToFolder) 
 						{
 							if (!answer.equals(PlatformSetup.Answer.Always))
 							{
@@ -85,7 +93,7 @@ class Main
 							
 							if (answer.equals(PlatformSetup.Answer.Yes) || answer.equals(PlatformSetup.Answer.Always))
 							{
-								var size:Int = Std.int(removeFolder(pathToFolder) / (1024 * 1024));
+								var size:Float = removeFolder(pathToFolder) / (1024 * 1024);
 								removedHaxelibVersions += path + Std.string(size) + " mb" + "\n";
 								totalSize += size;
 							}
@@ -98,11 +106,11 @@ class Main
 		return totalSize;
 	}
 	
-	private static function removeFolder(pathToFolder:String):Int
+	private static function removeFolder(pathToFolder:String):Float
 	{
 		var path:String;
 		
-		var totalSize:Int = 0;
+		var totalSize:Float = 0;
 		
 		for (entry in FileSystem.readDirectory(pathToFolder))
 		{
