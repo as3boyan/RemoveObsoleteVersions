@@ -1,4 +1,4 @@
 @echo off
 cd bin
-neko RemoveObsoleteVersions.n
+neko run.n
 pause
