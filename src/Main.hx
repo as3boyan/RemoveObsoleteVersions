@@ -36,8 +36,23 @@ class Main
 	
 	private static function cleanHaxelib(path:String):Int
 	{
-		var currentVersion:String = File.getContent(PathHelper.combine(path, ".current"));
-		var version:String = StringTools.replace(currentVersion, ".", ",");
+		var currentVersion:String = null;
+		var version:String = null;
+		var pathToCurrent:String = PathHelper.combine(path, ".current");
+		
+		if (FileSystem.exists(pathToCurrent)) 
+		{
+			currentVersion = File.getContent(pathToCurrent);
+		}
+		
+		version = StringTools.replace(currentVersion, ".", ",");
+		
+		var dev:String = null;
+		var pathToDev = PathHelper.combine(path, ".dev");
+		if (FileSystem.exists(pathToDev)) 
+		{
+			dev = File.getContent(pathToDev);
+		}
 		
 		var pathToFolder:String;
 		
@@ -45,22 +60,37 @@ class Main
 		
 		var answer:PlatformSetup.Answer = null;
 		
-		for (entry in FileSystem.readDirectory(path))
+		if (version != null) 
 		{
-			pathToFolder = PathHelper.combine(path, entry);
-			
-			if (FileSystem.isDirectory(pathToFolder) && entry != version)
+			for (entry in FileSystem.readDirectory(path))
 			{
-				if (!answer.equals(PlatformSetup.Answer.Always))
-				{
-					answer = PlatformSetup.ask("Remove " + pathToFolder + " ? (y/n/a)");
-				}
+				pathToFolder = PathHelper.combine(path, entry);
 				
-				if (answer.equals(PlatformSetup.Answer.Yes) || answer.equals(PlatformSetup.Answer.Always))
+				if (FileSystem.isDirectory(pathToFolder))
 				{
-					var size:Int = Std.int(removeFolder(pathToFolder) / (1024 * 1024));
-					removedHaxelibVersions += path + Std.string(size) + " mb" + "\n";
-					totalSize += size;
+					if (entry != version) 
+					{
+						/*trace("entry: ", entry);
+						trace("version: ", version);
+						trace("dev: ", dev);
+						trace("pathToFolder: ", pathToFolder);
+						trace("dev=pathToFolder: ", dev==pathToFolder);*/
+						
+						if (version != "dev" || (dev != null && dev != pathToFolder)) 
+						{
+							if (!answer.equals(PlatformSetup.Answer.Always))
+							{
+								answer = PlatformSetup.ask("Remove " + pathToFolder + " ? (y/n/a)");
+							}
+							
+							if (answer.equals(PlatformSetup.Answer.Yes) || answer.equals(PlatformSetup.Answer.Always))
+							{
+								var size:Int = Std.int(removeFolder(pathToFolder) / (1024 * 1024));
+								removedHaxelibVersions += path + Std.string(size) + " mb" + "\n";
+								totalSize += size;
+							}
+						}
+					}
 				}
 			}
 		}
