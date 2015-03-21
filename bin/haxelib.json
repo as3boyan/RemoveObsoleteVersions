@@ -10,9 +10,9 @@
 
    "description": "Removes obsolete versions of locally installed haxelibs",   
 
-   "version": "1.0.3",     
+   "version": "1.0.4",     
 
-   "releasenote": "Check if git repository is used as haxelib - then do not prompt to remove it",     
+   "releasenote": "--silent argument",     
 
    "contributors": ["as3boyan"],     
 

@@ -15,6 +15,7 @@ import sys.io.Process;
 class Main 
 {
 	private static var removedHaxelibVersions:String;
+	static var silent:Bool;
 	
 	static function main() 
 	{
@@ -28,9 +29,19 @@ class Main
 		
 		var totalSize:Float = 0;
 		
+		silent = false;
+		
+		if (Sys.args().length > 1) 
+		{
+			if (Sys.args()[0] == "--silent") 
+			{
+				silent = true;
+			}
+		}
+		
 		for (entry in FileSystem.readDirectory(path))
 		{
-			totalSize += cleanHaxelib(PathHelper.combine(path, entry));
+			totalSize += cleanHaxelib(PathHelper.combine(path, entry), silent);
 		}
 		
 		if (totalSize != 0) 
@@ -43,7 +54,7 @@ class Main
 		}
 	}
 	
-	private static function cleanHaxelib(path:String):Float
+	private static function cleanHaxelib(path:String, silent:Bool):Float
 	{
 		var currentVersion:String = null;
 		var version:String = null;
@@ -67,6 +78,11 @@ class Main
 		var totalSize:Float = 0;
 		
 		var answer:PlatformSetup.Answer = null;
+		
+		if (silent) 
+		{
+			answer = PlatformSetup.Answer.Always;
+		}
 		
 		if (version != null) 
 		{
