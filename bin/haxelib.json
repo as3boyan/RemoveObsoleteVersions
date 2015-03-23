@@ -10,9 +10,9 @@
 
    "description": "Removes obsolete versions of locally installed haxelibs",   
 
-   "version": "1.0.4",     
+   "version": "1.0.5",     
 
-   "releasenote": "--silent argument",     
+   "releasenote": "--debug argument",     
 
    "contributors": ["as3boyan"],     
 

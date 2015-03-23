@@ -12,10 +12,16 @@ import sys.io.Process;
  * @author 
  */
 
+@:enum abstract Flag(Int)
+{
+    var Silent = 0;
+    var Debug = 1;
+}
+ 
 class Main 
 {
 	private static var removedHaxelibVersions:String;
-	static var silent:Bool;
+	static var flags:Array<Flag>;
 	
 	static function main() 
 	{
@@ -29,19 +35,24 @@ class Main
 		
 		var totalSize:Float = 0;
 		
-		silent = false;
+		flags = [];
 		
-		if (Sys.args().length > 1) 
+		for (i in 1...Sys.args().length) 
 		{
-			if (Sys.args()[0] == "--silent") 
+			switch (Sys.args()[i]) 
 			{
-				silent = true;
+				case "--silent":
+					flags.push(Silent);
+				case "--debug":
+					flags.push(Debug);
+				default:
+					
 			}
 		}
 		
 		for (entry in FileSystem.readDirectory(path))
 		{
-			totalSize += cleanHaxelib(PathHelper.combine(path, entry), silent);
+			totalSize += cleanHaxelib(PathHelper.combine(path, entry), flags.indexOf(Silent) != -1);
 		}
 		
 		if (totalSize != 0) 
@@ -94,11 +105,14 @@ class Main
 				{
 					if (entry != version) 
 					{
-						/*trace("entry: ", entry);
-						trace("version: ", version);
-						trace("dev: ", dev);
-						trace("pathToFolder: ", pathToFolder);
-						trace("dev=pathToFolder: ", dev==pathToFolder);*/
+						if (flags.indexOf(Debug) != -1) 
+						{
+							trace('folder name: $entry');
+							trace('version: $version');
+							trace('dev: $dev');
+							trace('pathToFolder: $pathToFolder');
+							trace('dev = pathToFolder: ${ dev == pathToFolder }');
+						}
 						
 						if (dev != pathToFolder) 
 						{
