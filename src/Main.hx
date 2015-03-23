@@ -37,7 +37,7 @@ class Main
 		
 		flags = [];
 		
-		for (i in 1...Sys.args().length) 
+		for (i in 0...Sys.args().length) 
 		{
 			switch (Sys.args()[i]) 
 			{
